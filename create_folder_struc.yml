@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+
+kind: Job
+metadata:
+  name: mypod-job
+spec:
+  ttlSecondsAfterFinished: 10
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: main-container
+        image: busybox
+        command: ["sleep", "120"]
+        volumeMounts:
+        - name: common-pv-1
+          mountPath: /data
+      initContainers:
+      - name: create-dirs
+        image: busybox
+        command: ["sh", "-c", "mkdir -p /data/folder1 /data/folder2 /data/folder3 /data/maps /data/maps/pdf"]
+        volumeMounts:
+        - name: common-pv-1
+          mountPath: /data
+      volumes:
+      - name: common-pv-1
+        hostPath:
+          path: /data
